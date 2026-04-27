@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContextCraft — Context Engineering Studio</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#1D9E75;--brand-dk:#0F6E56;--brand-lt:#E1F5EE;--brand-mid:#5DCAA5;
+  --bg:#ffffff;--bg2:#f7f7f5;--bg3:#f0efeb;
+  --border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.16);--border3:rgba(0,0,0,0.24);
+  --text:#1a1a18;--muted:#6b6b68;--hint:#9b9b97;
+  --r:8px;--rl:12px;--rxl:16px;
+  --amber:#BA7517;--amber-lt:#FAEEDA;--amber-dk:#633806;
+  --red:#E24B4A;--red-lt:#FCEBEB;--red-dk:#791F1F;
+  --blue:#185FA5;--blue-lt:#E6F1FB;--blue-dk:#0C447C;
+  --purple:#534AB7;--purple-lt:#EEEDFE;--purple-dk:#3C3489;
+  --pink:#D4537E;--pink-lt:#FBEAF0;--pink-dk:#72243E;
+}
+[data-theme="dark"] {
+  --brand:#26C494;--brand-dk:#5DCAA5;--brand-lt:#0F3D2F;--brand-mid:#1D9E75;
+  --bg:#121212;--bg2:#1E1E1E;--bg3:#252525;
+  --border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.15);--border3:rgba(255,255,255,0.2);
+  --text:#E0E0E0;--muted:#A0A0A0;--hint:#606060;
+  --amber:#F2A65A;--amber-lt:#4A3215;--amber-dk:#FAD3A2;
+  --red:#E24B4A;--red-lt:#4A1C1C;--red-dk:#F08A8A;
+  --blue:#4B92D4;--blue-lt:#15324A;--blue-dk:#8AB9F0;
+  --purple:#786CD4;--purple-lt:#2C274A;--purple-dk:#A49DF0;
+  --pink:#E06C96;--pink-lt:#4A1F30;--pink-dk:#F09CB9;
+}
+html,body{height:100%;font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg3);color:var(--text);font-size:14px;line-height:1.5}
+.app{display:grid;grid-template-columns:216px 1fr;grid-template-rows:52px 1fr;height:100vh;overflow:hidden}
+
+/* TOPBAR */
+.topbar{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 18px;background:var(--bg);border-bottom:0.5px solid var(--border2);z-index:10}
+.logo{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;letter-spacing:-0.02em;color:var(--text)}
+.logo-mark{width:24px;height:24px;background:var(--brand);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:14px;height:14px;fill:white}
+.topbar-sep{width:0.5px;height:20px;background:var(--border2);margin:0 4px}
+.global-score{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;border:0.5px solid var(--border2);font-size:12px;color:var(--muted)}
+.score-val{font-weight:600;font-size:14px;color:var(--brand-dk)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.tag{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500}
+.tag-beta{background:var(--brand-lt);color:var(--brand-dk)}
+.btn{padding:6px 14px;border-radius:var(--r);border:0.5px solid var(--border2);background:var(--bg);color:var(--text);font-size:12px;cursor:pointer;font-weight:500;transition:background 0.12s}
+.btn:hover{background:var(--bg2)}
+.btn-primary{background:var(--brand);color:white;border-color:var(--brand-dk)}
+.btn-primary:hover{background:var(--brand-dk)}
+.btn-sm{padding:4px 10px;font-size:11px}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg);border-right:0.5px solid var(--border);overflow-y:auto;padding:10px 0;display:flex;flex-direction:column;gap:0}
+.sidebar-section{padding:14px 14px 4px;font-size:10px;color:var(--hint);font-weight:600;text-transform:uppercase;letter-spacing:0.07em}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 14px;font-size:13px;color:var(--muted);cursor:pointer;transition:background 0.1s;user-select:none;border-left:2px solid transparent}
+.nav-item:hover{background:var(--bg2);color:var(--text)}
+.nav-item.active{color:var(--brand-dk);background:var(--brand-lt);border-left-color:var(--brand);font-weight:500}
+.nav-icon{width:15px;height:15px;flex-shrink:0;opacity:0.65}
+.nav-item.active .nav-icon{opacity:1}
+.nav-badge{margin-left:auto;font-size:10px;background:var(--bg3);padding:1px 6px;border-radius:10px;color:var(--hint);border:0.5px solid var(--border)}
+.nav-item.active .nav-badge{background:white;color:var(--brand-dk)}
+.sidebar-div{height:0.5px;background:var(--border);margin:6px 14px}
+
+/* MAIN */
+.main-area{overflow-y:auto;background:var(--bg3);position:relative}
+.page{display:none;padding:20px;gap:16px;flex-direction:column;min-height:100%}
+.page.active{display:flex}
+
+/* PANELS */
+.panel{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rl);overflow:hidden}
+.panel-hd{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:0.5px solid var(--border);min-height:40px}
+.panel-title{font-size:13px;font-weight:500;flex:1}
+.panel-body{padding:14px}
+.panel-tag{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;border:0.5px solid transparent}
+.pt-sys{background:var(--blue-lt);color:var(--blue-dk)}
+.pt-tool{background:var(--amber-lt);color:var(--amber-dk)}
+.pt-hist{background:var(--pink-lt);color:var(--pink-dk)}
+.pt-ex{background:#EAF3DE;color:#27500A}
+.pt-mem{background:var(--purple-lt);color:var(--purple-dk)}
+.pt-agent{background:var(--red-lt);color:var(--red-dk)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* FORM ELEMENTS */
+textarea,input[type=text],select{width:100%;font-family:inherit;font-size:12px;color:var(--text);background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--r);padding:9px 11px;line-height:1.6;resize:vertical;transition:border-color 0.12s}
+textarea:focus,input[type=text]:focus,select:focus{outline:none;border-color:var(--brand-mid);background:var(--bg)}
+textarea.mono{font-family:'SF Mono','Fira Code',monospace;font-size:12px}
+select{resize:none;cursor:pointer}
+label{font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:500}
+
+/* TOKEN BAR */
+.token-wrap{margin-top:10px}
+.token-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
+.token-bar{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.token-fill{height:100%;border-radius:2px;background:var(--brand);transition:width 0.3s}
+.token-fill.warn{background:var(--amber)}
+.token-fill.danger{background:var(--red)}
+
+/* SCORE CARDS */
+.score-card{border:0.5px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:8px}
+.score-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;font-size:12px}
+.score-bar{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-bottom:5px}
+.score-fill{height:100%;border-radius:3px;background:var(--brand)}
+.score-note{font-size:11px;color:var(--muted);line-height:1.4}
+
+/* OUTPUT */
+.output-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--r);padding:12px;font-size:12px;line-height:1.7;min-height:64px;white-space:pre-wrap;word-break:break-word}
+.output-box.mono{font-family:'SF Mono','Fira Code',monospace}
+.loading-text{color:var(--muted);font-style:italic}
+
+/* CHIPS */
+.chip-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{font-size:11px;padding:3px 9px;border-radius:20px;border:0.5px solid var(--border2);color:var(--muted);cursor:pointer;background:var(--bg);transition:all 0.12s;white-space:nowrap}
+.chip:hover{background:var(--brand-lt);border-color:var(--brand-mid);color:var(--brand-dk)}
+.chip.active{background:var(--brand-lt);border-color:var(--brand);color:var(--brand-dk);font-weight:500}
+
+/* TOOL CARDS */
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tool-card{border:0.5px solid var(--border);border-radius:var(--r);padding:10px;cursor:pointer;transition:all 0.12s}
+.tool-card:hover{border-color:var(--brand-mid);background:var(--brand-lt)}
+.tool-card.on{border-color:var(--brand);background:var(--brand-lt)}
+.tool-card-hd{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.tool-dot{width:7px;height:7px;border-radius:50%;background:var(--border2)}
+.tool-card.on .tool-dot{background:var(--brand)}
+.tool-name{font-size:12px;font-weight:500}
+.tool-desc{font-size:11px;color:var(--muted);line-height:1.4}
+.tool-warning{font-size:11px;padding:6px 10px;border-radius:var(--r);background:var(--amber-lt);color:var(--amber-dk);margin-top:8px;border:0.5px solid rgba(186,117,23,0.2)}
+
+/* ANALYSIS ITEMS */
+.analysis-item{display:flex;gap:9px;padding:9px 0;border-bottom:0.5px solid var(--border)}
+.analysis-item:last-child{border:none}
+.a-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.a-warn{background:var(--amber-lt)}
+.a-ok{background:var(--brand-lt)}
+.a-info{background:var(--blue-lt)}
+.a-text{font-size:12px;line-height:1.5;color:var(--muted)}
+.a-text strong{color:var(--text);font-weight:500}
+.a-text code{font-family:monospace;background:var(--bg2);padding:1px 4px;border-radius:3px;font-size:11px}
+
+/* HISTORY */
+.history-item{padding:10px 0;border-bottom:0.5px solid var(--border);cursor:pointer}
+.history-item:last-child{border:none}
+.history-item:hover .history-title{color:var(--brand-dk)}
+.history-title{font-size:13px;font-weight:500;margin-bottom:3px;transition:color 0.12s}
+.history-meta{font-size:11px;color:var(--muted);display:flex;gap:10px}
+.delta-up{color:var(--brand-dk);font-weight:500}
+.delta-dn{color:var(--red-dk);font-weight:500}
+
+/* MEMORY */
+.mem-file{display:flex;align-items:center;gap:8px;padding:8px 10px;border:0.5px solid var(--border);border-radius:var(--r);margin-bottom:6px;cursor:pointer;transition:all 0.12s}
+.mem-file:hover{border-color:var(--brand-mid);background:var(--brand-lt)}
+.mem-file.active{border-color:var(--brand);background:var(--brand-lt)}
+.mem-file-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:var(--bg2);border:0.5px solid var(--border);flex-shrink:0}
+.mem-file-name{font-size:12px;font-weight:500;flex:1}
+.mem-file-size{font-size:11px;color:var(--muted)}
+
+/* SUBAGENT */
+.agent-card{border:0.5px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;cursor:pointer;transition:all 0.12s}
+.agent-card:hover{border-color:var(--brand-mid)}
+.agent-card.running{border-color:var(--brand);background:var(--brand-lt)}
+.agent-card-hd{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.agent-status{width:8px;height:8px;border-radius:50%;background:var(--border2);flex-shrink:0}
+.agent-status.running{background:var(--brand);animation:pulse 1.4s infinite}
+.agent-status.done{background:#639922}
+.agent-status.err{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.agent-name{font-size:13px;font-weight:500}
+.agent-tokens{margin-left:auto;font-size:11px;color:var(--muted)}
+.agent-task{font-size:11px;color:var(--muted);line-height:1.4}
+.agent-output{margin-top:8px;font-size:11px;background:var(--bg2);border-radius:var(--r);padding:8px;border:0.5px solid var(--border);display:none;line-height:1.5}
+.agent-card.done .agent-output{display:block}
+
+/* COMPACTION */
+.compact-section{border:0.5px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px}
+.compact-title{font-size:12px;font-weight:500;margin-bottom:8px;color:var(--text)}
+.compact-row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);margin-bottom:4px}
+.compact-arrow{color:var(--brand-dk);font-weight:700}
+.diff-add{background:#E1F5EE;color:#085041;padding:1px 3px;border-radius:2px}
+.diff-rm{background:var(--red-lt);color:var(--red-dk);padding:1px 3px;border-radius:2px;text-decoration:line-through}
+
+/* FEW-SHOT */
+.example-card{border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:10px}
+.ex-hd{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg2);border-bottom:0.5px solid var(--border)}
+.ex-num{width:20px;height:20px;border-radius:50%;background:var(--brand);color:white;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ex-title{font-size:12px;font-weight:500;flex:1}
+.ex-body{padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ex-label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px}
+
+/* SPINNER */
+.spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--brand);border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* MISC */
+.flex{display:flex}.items-center{align-items:center}.gap-8{gap:8px}.gap-12{gap:12px}.mt-8{margin-top:8px}.mt-12{margin-top:12px}.mt-16{margin-top:16px}
+.text-muted{color:var(--muted)}.text-sm{font-size:12px}.text-xs{font-size:11px}.text-green{color:var(--brand-dk)}.text-amber{color:var(--amber-dk)}.text-red{color:var(--red-dk)}
+.fw-500{font-weight:500}.mono{font-family:'SF Mono','Fira Code',monospace}
+hr{border:none;border-top:0.5px solid var(--border);margin:12px 0}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 14 14"><path d="M7 1L2 4v5l5 3 5-3V4L7 1z"/></svg>
+    </div>
+    ContextCraft
+  </div>
+  <span class="tag tag-beta">Beta</span>
+  <div class="topbar-sep"></div>
+  <div class="global-score">
+    Context score <span class="score-val" id="global-score">—</span>
+  </div>
+  <div class="topbar-right">
+    <button class="btn btn-sm" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
+    <button class="btn btn-sm" onclick="logout()">Logout</button>
+    <button class="btn btn-sm" onclick="clearAll()">Clear</button>
+    <button class="btn btn-primary btn-sm" onclick="runCurrentPageAction()">▶ Run</button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-section">Workspace</div>
+  <div class="nav-item active" data-page="builder" onclick="navigate('builder',this)">
+    <svg class="nav-icon" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1.5" y="1.5" width="12" height="12" rx="2"/><line x1="4" y1="5" x2="11" y2="5"/><line x1="4" y1="8" x2="9" y2="8"/><line x1="4" y1="11" x2="7" y2="11"/></svg>
+    Context builder
+  </div>
+  <div class="nav-item" data-page="analyzer" onclick="navigate('analyzer',this)">
+    <svg class="nav-icon" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7.5" cy="7.5" r="5.5"/><line x1="7.5" y1="4.5" x2="7.5" y2="7.5"/><circle cx="7.5" cy="10" r="0.7" fill="currentColor"/></svg>
+    Analyzer
+    <span class="nav-badge" id="issue-count">—</span>
+  </div>
+  <div class="nav-item" data-page="compaction" onclick="navigate('compaction',this)">
+    <svg class="nav-icon" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 4h11M2 7.5h7M2 11h5"/><path d="M12 9.5l2 2-2 2"/></svg>
+    Compaction lab
+  </div>
+  <div class="nav-item" data-page="history" onclick="navigate('history',this)">
+    <svg class="nav-icon" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7.5" cy="7.5" r="5.5"/><polyline points="7.5,4.5 7.5,7.5 9.5,8.5"/></svg>
+    History
+  </div>
+  <div class="sidebar-div"></div>
+  <div class="sidebar-section">Techniques</div>
+  <div class="nav-item" data-page="fewshot" onclick="navigate('fewshot',this)">
+    <svg class="nav-icon" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1.5" y="2" width="12" height="3.5" rx="1"/><rect x="1.5" y="7.5" width="8" height="3.5" rx="1"/></svg>
+    Few-shot examples
+  </div>
+  <div class="nav-item" data-page="memory" onclick="navigate('memory',this)">
+    <svg class="nav-icon" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.4"><ellipse cx="7.5" cy="5" rx="5" ry="3"/><path d="M2.5 5v5c0 1.66 2.24 3 5 3s5-1.34 5-3V5"/><path d="M2.5 7.5c0 1.66 2.24 3 5 3s5-1.34 5-3"/></svg>
+    Memory &amp; notes
+  </div>
+  <div class="nav-item" data-page="subagents" onclick="navigate('subagents',this)">
+    <svg class="nav-icon" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7.5" cy="3.5" r="2"/><circle cx="3" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><line x1="7.5" y1="5.5" x2="4.8" y2="10"/><line x1="7.5" y1="5.5" x2="10.2" y2="10"/><line x1="4.8" y1="10" x2="10.2" y2="10"/></svg>
+    Sub-agents
+  </div>
+</div>
+
+<!-- ==================== PAGE: CONTEXT BUILDER ==================== -->
+<div class="main-area" id="page-builder" style="display:flex">
+<div class="page active" style="display:flex">
+  <div class="two-col" style="flex:1;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <!-- System prompt -->
+      <div class="panel">
+        <div class="panel-hd">
+          <span class="panel-tag pt-sys">system</span>
+          <span class="panel-title">System prompt</span>
+          <select id="altitude-select" onchange="updateBuilderScores()" style="width:auto;font-size:11px;padding:3px 8px">
+            <option value="balanced">Altitude: balanced</option>
+            <option value="specific">Too specific / brittle</option>
+            <option value="vague">Too vague</option>
+          </select>
+        </div>
+        <div class="panel-body">
+          <textarea class="mono" id="system-prompt" rows="9" oninput="updateTokenBar('sys-bar','sys-token-lbl',this.value,2048);updateBuilderScores()" placeholder="Describe the agent's role using XML sections:
+
+&lt;role&gt;You are...&lt;/role&gt;
+&lt;background_information&gt;...&lt;/background_information&gt;
+&lt;instructions&gt;...&lt;/instructions&gt;
+&lt;output_format&gt;...&lt;/output_format&gt;"></textarea>
+          <div class="chip-row">
+            <span class="chip" onclick="insertSnippet('role')">+ Role</span>
+            <span class="chip" onclick="insertSnippet('background')">+ Background</span>
+            <span class="chip" onclick="insertSnippet('instructions')">+ Instructions</span>
+            <span class="chip" onclick="insertSnippet('tools_guidance')">+ Tool guidance</span>
+            <span class="chip" onclick="insertSnippet('output_format')">+ Output format</span>
+            <span class="chip" onclick="insertSnippet('examples_block')">+ Examples</span>
+          </div>
+          <div class="token-wrap">
+            <div class="token-lbl"><span>System prompt tokens</span><span id="sys-token-lbl">0 / 2,048</span></div>
+            <div class="token-bar"><div class="token-fill" id="sys-bar" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tools -->
+      <div class="panel">
+        <div class="panel-hd">
+          <span class="panel-tag pt-tool">tools</span>
+          <span class="panel-title">Active tools</span>
+          <span class="text-xs text-muted" id="tools-enabled-count">0 enabled</span>
+        </div>
+        <div class="panel-body">
+          <div class="tool-grid" id="tool-grid">
+            <div class="tool-card on" onclick="toggleTool(this,'web_search','Live web lookup for current facts')">
+              <div class="tool-card-hd"><div class="tool-dot"></div><span class="tool-name">web_search</span></div>
+              <div class="tool-desc">Live web lookup for current facts</div>
+            </div>
+            <div class="tool-card on" onclick="toggleTool(this,'get_customer','Fetch account by customer ID')">
+              <div class="tool-card-hd"><div class="tool-dot"></div><span class="tool-name">get_customer</span></div>
+              <div class="tool-desc">Fetch account by customer ID</div>
+            </div>
+            <div class="tool-card on" onclick="toggleTool(this,'create_ticket','Open a support ticket in the system')">
+              <div class="tool-card-hd"><div class="tool-dot"></div><span class="tool-name">create_ticket</span></div>
+              <div class="tool-desc">Open a support ticket in the system</div>
+            </div>
+            <div class="tool-card" onclick="toggleTool(this,'send_email','Send email to user')">
+              <div class="tool-card-hd"><div class="tool-dot"></div><span class="tool-name">send_email</span></div>
+              <div class="tool-desc">Send email to user</div>
+            </div>
+            <div class="tool-card" onclick="toggleTool(this,'read_file','Read file contents from path')">
+              <div class="tool-card-hd"><div class="tool-dot"></div><span class="tool-name">read_file</span></div>
+              <div class="tool-desc">Read file contents from path</div>
+            </div>
+            <div class="tool-card" onclick="toggleTool(this,'memory','Store and retrieve notes across sessions')">
+              <div class="tool-card-hd"><div class="tool-dot"></div><span class="tool-name">memory</span></div>
+              <div class="tool-desc">Store and retrieve notes across sessions</div>
+            </div>
+          </div>
+          <div id="tool-overlap-warn" class="tool-warning" style="display:none">⚠ Possible tool overlap detected. If a human can't decide which tool to use in a given situation, neither can the model.</div>
+        </div>
+      </div>
+
+      <!-- Message history -->
+      <div class="panel">
+        <div class="panel-hd">
+          <span class="panel-tag pt-hist">history</span>
+          <span class="panel-title">Message history</span>
+          <select id="history-strategy" onchange="updateBuilderScores()" style="width:auto;font-size:11px;padding:3px 8px">
+            <option value="20">Keep last 20 turns</option>
+            <option value="10">Keep last 10 turns</option>
+            <option value="summarized">Summarized (compacted)</option>
+            <option value="none">None (agent context only)</option>
+          </select>
+        </div>
+        <div class="panel-body">
+          <div class="flex items-center gap-12" style="margin-bottom:10px">
+            <div style="flex:1">
+              <div class="token-lbl"><span>History tokens</span><span id="hist-token-lbl">4,100 / 6,500 budget</span></div>
+              <div class="token-bar" style="height:6px"><div class="token-fill warn" id="hist-bar" style="width:63%"></div></div>
+            </div>
+            <button class="btn btn-sm" onclick="navigate('compaction',document.querySelector('[data-page=compaction]'))">Go to Compaction lab →</button>
+          </div>
+          <div class="text-xs text-muted">Tool result clearing removes stale tool outputs from history, reducing tokens by up to 84% per Anthropic benchmarks.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right column: scores + optimize -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Context scores</span></div>
+        <div class="panel-body">
+          <div id="builder-scores">
+            <div class="score-card">
+              <div class="score-hd"><span>Signal density</span><span class="fw-500" id="sc-signal">—</span></div>
+              <div class="score-bar"><div class="score-fill" id="sf-signal" style="width:0%"></div></div>
+              <div class="score-note" id="sn-signal">Write a system prompt to see analysis.</div>
+            </div>
+            <div class="score-card">
+              <div class="score-hd"><span>Prompt altitude</span><span class="fw-500" id="sc-altitude">—</span></div>
+              <div class="score-bar"><div class="score-fill" id="sf-altitude" style="width:0%"></div></div>
+              <div class="score-note" id="sn-altitude">Balance between over-specified and too vague.</div>
+            </div>
+            <div class="score-card">
+              <div class="score-hd"><span>Tool clarity</span><span class="fw-500" id="sc-tools">—</span></div>
+              <div class="score-bar"><div class="score-fill" id="sf-tools" style="width:0%"></div></div>
+              <div class="score-note" id="sn-tools">Enable tools to see their clarity score.</div>
+            </div>
+            <div class="score-card">
+              <div class="score-hd"><span>History efficiency</span><span class="fw-500" id="sc-hist">—</span></div>
+              <div class="score-bar"><div class="score-fill" id="sf-hist" style="width:0%"></div></div>
+              <div class="score-note" id="sn-hist">Select a history strategy to score.</div>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="runBuilderOptimize()">▶ Optimize with Claude</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Optimized output</span><button class="btn btn-sm" onclick="copyOutput('builder-output')">Copy</button></div>
+        <div class="panel-body">
+          <div class="output-box mono" id="builder-output">Optimized system prompt will appear here after running the optimizer.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== PAGE: ANALYZER ==================== -->
+<div class="main-area" id="page-analyzer" style="display:none">
+<div class="page active" style="flex-direction:column">
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-hd"><span class="panel-title">Paste your full context</span><span class="text-xs text-muted">system + tools + history</span></div>
+      <div class="panel-body">
+        <textarea class="mono" id="analyzer-input" rows="16" placeholder="Paste your full prompt / context here. Include everything: system prompt, tool definitions, few-shot examples, and any recent conversation turns.&#10;&#10;The analyzer will detect issues and score it against Anthropic's context engineering framework."></textarea>
+        <div class="token-wrap">
+          <div class="token-lbl"><span>Total tokens (estimate)</span><span id="analyzer-token-lbl">0</span></div>
+          <div class="token-bar"><div class="token-fill" id="analyzer-bar" style="width:0%"></div></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn btn-primary" style="flex:1" onclick="runAnalyzer()">▶ Analyze with Claude</button>
+          <button class="btn" onclick="loadAnalyzerSample()">Load sample</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hd"><span class="panel-title">Score breakdown</span></div>
+      <div class="panel-body" id="analyzer-scores">
+        <div class="text-sm text-muted" style="padding:20px 0;text-align:center">Run the analyzer to see scores.</div>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-hd">
+      <span class="panel-title">Issues &amp; recommendations</span>
+      <span class="nav-badge" id="issue-badge">—</span>
+    </div>
+    <div class="panel-body" id="analyzer-issues">
+      <div class="text-sm text-muted" style="padding:12px 0;text-align:center">No analysis yet. Paste your context and click Analyze.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== PAGE: COMPACTION LAB ==================== -->
+<div class="main-area" id="page-compaction" style="display:none">
+<div class="page active">
+  <div class="two-col">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Message history to compact</span></div>
+        <div class="panel-body">
+          <textarea class="mono" id="compact-input" rows="14" placeholder="Paste a long conversation history here — multi-turn messages, tool calls and results, agent outputs, etc.&#10;&#10;The compaction engine will:&#10;• Preserve architectural decisions, bugs, and key context&#10;• Clear redundant tool outputs&#10;• Summarize repetitive turns&#10;• Return a compressed summary + 5 most recent turns"></textarea>
+          <div class="token-wrap">
+            <div class="token-lbl"><span>Input tokens</span><span id="compact-in-lbl">0</span></div>
+            <div class="token-bar"><div class="token-fill" id="compact-in-bar" style="width:0%"></div></div>
+          </div>
+          <div style="margin-top:12px">
+            <label>Compaction strategy</label>
+            <select id="compact-strategy">
+              <option value="full">Full compaction (summarize + clear tool results)</option>
+              <option value="tool_clear">Tool result clearing only (lightest touch)</option>
+              <option value="summarize">Summarize only (keep structure)</option>
+            </select>
+          </div>
+          <div style="margin-top:8px">
+            <label>Preserve (comma-separated keywords)</label>
+            <input type="text" id="compact-preserve" placeholder="e.g. bug, architectural decision, TODO, unresolved">
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="runCompaction()">▶ Compact with Claude</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Compaction stats</span></div>
+        <div class="panel-body">
+          <div class="three-col" style="margin-bottom:12px">
+            <div style="text-align:center;padding:10px;background:var(--bg2);border-radius:var(--r)">
+              <div class="text-xs text-muted" style="margin-bottom:4px">Input tokens</div>
+              <div class="fw-500" style="font-size:18px" id="stat-in">—</div>
+            </div>
+            <div style="text-align:center;padding:10px;background:var(--brand-lt);border-radius:var(--r)">
+              <div class="text-xs text-muted" style="margin-bottom:4px">Output tokens</div>
+              <div class="fw-500 text-green" style="font-size:18px" id="stat-out">—</div>
+            </div>
+            <div style="text-align:center;padding:10px;background:var(--bg2);border-radius:var(--r)">
+              <div class="text-xs text-muted" style="margin-bottom:4px">Reduction</div>
+              <div class="fw-500 text-green" style="font-size:18px" id="stat-pct">—</div>
+            </div>
+          </div>
+          <div class="text-xs text-muted">Anthropic benchmarks: tool result clearing alone reduced tokens by 84% on 100-turn web search tasks.</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Compacted output</span><button class="btn btn-sm" onclick="copyOutput('compact-output')">Copy</button></div>
+        <div class="panel-body">
+          <div class="output-box mono" id="compact-output">Compacted history will appear here.</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">What was preserved</span></div>
+        <div class="panel-body" id="compact-preserved">
+          <div class="text-xs text-muted">Run compaction to see a summary of what was kept vs. discarded.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== PAGE: HISTORY ==================== -->
+<div class="main-area" id="page-history" style="display:none">
+<div class="page active">
+  <div class="two-col" style="align-items:start">
+    <div class="panel">
+      <div class="panel-hd"><span class="panel-title">Saved context configurations</span></div>
+      <div class="panel-body">
+        <div id="history-list">
+          <div class="history-item" onclick="loadHistory(0)">
+            <div class="history-title">Customer support agent — Acme Corp</div>
+            <div class="history-meta"><span>2 min ago</span><span>Score: 72 → <span class="delta-up">86 ↑</span></span><span>3 tools</span><span>~87 sys tokens</span></div>
+          </div>
+          <div class="history-item" onclick="loadHistory(1)">
+            <div class="history-title">Research summarizer — long-horizon task</div>
+            <div class="history-meta"><span>1 hr ago</span><span>Score: 61 → <span class="delta-up">79 ↑</span></span><span>2 tools</span><span>~210 sys tokens</span></div>
+          </div>
+          <div class="history-item" onclick="loadHistory(2)">
+            <div class="history-title">Code review agent — PR analysis</div>
+            <div class="history-meta"><span>3 hr ago</span><span>Score: <span class="delta-dn">44 ↓</span></span><span>5 tools</span><span>~412 sys tokens</span></div>
+          </div>
+          <div class="history-item" onclick="loadHistory(3)">
+            <div class="history-title">Data extraction pipeline — multi-step</div>
+            <div class="history-meta"><span>Yesterday</span><span>Score: 55 → <span class="delta-up">91 ↑</span></span><span>4 tools</span><span>~155 sys tokens</span></div>
+          </div>
+          <div class="history-item" onclick="loadHistory(4)">
+            <div class="history-title">Email drafting assistant — tone-controlled</div>
+            <div class="history-meta"><span>2 days ago</span><span>Score: 83</span><span>1 tool</span><span>~103 sys tokens</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-hd"><span class="panel-title">Selected configuration</span></div>
+      <div class="panel-body">
+        <div id="history-detail" class="text-sm text-muted">Click a saved configuration to see its details.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== PAGE: FEW-SHOT EXAMPLES ==================== -->
+<div class="main-area" id="page-fewshot" style="display:none">
+<div class="page active">
+  <div class="two-col" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="panel">
+        <div class="panel-hd">
+          <span class="panel-tag pt-ex">examples</span>
+          <span class="panel-title">Few-shot example builder</span>
+          <button class="btn btn-sm" onclick="addExample()">+ Add example</button>
+        </div>
+        <div class="panel-body">
+          <div id="examples-container">
+            <div class="example-card">
+              <div class="ex-hd"><div class="ex-num">1</div><span class="ex-title">Example 1</span><button class="btn btn-sm" onclick="removeExample(this)" style="margin-left:auto">Remove</button></div>
+              <div class="ex-body">
+                <div><div class="ex-label">User input</div><textarea rows="4" placeholder="What the user says..."></textarea></div>
+                <div><div class="ex-label">Ideal response</div><textarea rows="4" placeholder="How the agent should respond..."></textarea></div>
+              </div>
+            </div>
+            <div class="example-card">
+              <div class="ex-hd"><div class="ex-num">2</div><span class="ex-title">Example 2</span><button class="btn btn-sm" onclick="removeExample(this)" style="margin-left:auto">Remove</button></div>
+              <div class="ex-body">
+                <div><div class="ex-label">User input</div><textarea rows="4" placeholder="What the user says..."></textarea></div>
+                <div><div class="ex-label">Ideal response</div><textarea rows="4" placeholder="How the agent should respond..."></textarea></div>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="runFewshotAnalysis()">▶ Analyze &amp; improve examples with Claude</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Diversity analysis</span></div>
+        <div class="panel-body" id="fewshot-diversity">
+          <div class="text-xs text-muted">Add examples and run analysis to see diversity scores and recommendations.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Generated XML block</span><button class="btn btn-sm" onclick="copyOutput('fewshot-output')">Copy</button></div>
+        <div class="panel-body">
+          <div class="output-box mono" id="fewshot-output">XML examples block will appear here — ready to paste into your system prompt.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Claude's suggestions</span></div>
+        <div class="panel-body">
+          <div class="output-box" id="fewshot-suggestions">Suggestions for improving example diversity and quality will appear here.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== PAGE: MEMORY & NOTES ==================== -->
+<div class="main-area" id="page-memory" style="display:none">
+<div class="page active">
+  <div class="two-col" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="panel">
+        <div class="panel-hd">
+          <span class="panel-tag pt-mem">memory</span>
+          <span class="panel-title">/memories directory</span>
+          <button class="btn btn-sm" onclick="addMemoryFile()">+ New file</button>
+        </div>
+        <div class="panel-body">
+          <div id="memory-files">
+            <div class="mem-file active" onclick="selectMemFile(this,'guidelines')">
+              <div class="mem-file-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="1" width="10" height="12" rx="1.5"/><line x1="4" y1="5" x2="10" y2="5"/><line x1="4" y1="8" x2="8" y2="8"/></svg></div>
+              <div style="flex:1"><div class="mem-file-name">customer_service_guidelines.xml</div><div class="mem-file-size">~340 tokens</div></div>
+            </div>
+            <div class="mem-file" onclick="selectMemFile(this,'policies')">
+              <div class="mem-file-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="1" width="10" height="12" rx="1.5"/><line x1="4" y1="5" x2="10" y2="5"/><line x1="4" y1="8" x2="8" y2="8"/></svg></div>
+              <div style="flex:1"><div class="mem-file-name">refund_policies.xml</div><div class="mem-file-size">~190 tokens</div></div>
+            </div>
+            <div class="mem-file" onclick="selectMemFile(this,'notes')">
+              <div class="mem-file-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="1" width="10" height="12" rx="1.5"/><line x1="4" y1="5" x2="10" y2="5"/><line x1="4" y1="8" x2="8" y2="8"/></svg></div>
+              <div style="flex:1"><div class="mem-file-name">NOTES.md</div><div class="mem-file-size">~82 tokens</div></div>
+            </div>
+          </div>
+          <hr>
+          <div class="text-xs text-muted" style="line-height:1.6">The memory tool lets agents <strong>create, read, update, and delete</strong> files in a dedicated <code style="font-family:monospace;background:var(--bg2);padding:1px 4px;border-radius:3px">/memories</code> directory. Files persist across sessions. Claude checks this directory before starting tasks, enabling just-in-time context retrieval instead of loading everything upfront.</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Memory tool API call preview</span></div>
+        <div class="panel-body">
+          <div class="output-box mono" style="font-size:11px" id="memory-api-preview">{
+  "type": "tool_use",
+  "name": "memory",
+  "input": {
+    "command": "view",
+    "path": "/memories/customer_service_guidelines.xml"
+  }
+}</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="panel">
+        <div class="panel-hd">
+          <span class="panel-title" id="mem-editor-title">customer_service_guidelines.xml</span>
+          <button class="btn btn-sm" onclick="runMemoryAnalysis()">▶ Analyze with Claude</button>
+          <button class="btn btn-sm" onclick="copyOutput('mem-editor')">Copy</button>
+        </div>
+        <div class="panel-body">
+          <textarea class="mono" id="mem-editor" rows="14" oninput="updateMemApiPreview(); saveActiveMemory()">&lt;guidelines&gt;
+  &lt;tone&gt;Professional but warm. Avoid jargon.&lt;/tone&gt;
+  &lt;escalation&gt;
+    Escalate to Tier 2 when: billing disputes over $500, account compromises, legal requests.
+  &lt;/escalation&gt;
+  &lt;response_time&gt;Respond within 2 turns. If unclear, ask one clarifying question.&lt;/response_time&gt;
+&lt;/guidelines&gt;</textarea>
+          <div class="token-wrap">
+            <div class="token-lbl"><span>File tokens</span><span id="mem-token-lbl">~68 tokens</span></div>
+            <div class="token-bar"><div class="token-fill" id="mem-bar" style="width:6%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Claude's analysis &amp; improvement</span></div>
+        <div class="panel-body">
+          <div class="output-box" id="memory-analysis">Paste a memory file and click Analyze to get suggestions on structure, token efficiency, and what to include for optimal just-in-time retrieval.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== PAGE: SUB-AGENTS ==================== -->
+<div class="main-area" id="page-subagents" style="display:none">
+<div class="page active">
+  <div class="two-col" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="panel">
+        <div class="panel-hd">
+          <span class="panel-tag pt-agent">orchestrator</span>
+          <span class="panel-title">Orchestrator task</span>
+        </div>
+        <div class="panel-body">
+          <label>Main task (what the orchestrator receives)</label>
+          <textarea id="orchestrator-task" rows="5" placeholder="Describe the high-level task the orchestrator agent needs to accomplish.&#10;&#10;Example: Research the top 5 competitors in the CRM market, summarize their pricing, features, and weaknesses, and produce a comparison report."></textarea>
+          <div style="margin-top:10px">
+            <label>Number of sub-agents</label>
+            <select id="num-subagents">
+              <option>2</option><option selected>3</option><option>4</option><option>5</option>
+            </select>
+          </div>
+          <div style="margin-top:8px">
+            <label>Sub-agent output token budget (each)</label>
+            <select id="subagent-budget">
+              <option>500 tokens</option><option selected>1,000 tokens</option><option>2,000 tokens</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="runSubagents()">▶ Design sub-agent architecture with Claude</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Architecture overview</span></div>
+        <div class="panel-body">
+          <div class="output-box" id="subagent-architecture">Architecture summary will appear here. The orchestrator keeps a high-level plan while each sub-agent explores deeply and returns a condensed 1–2k token summary.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Sub-agents</span><span class="text-xs text-muted" id="subagents-status">Not running</span></div>
+        <div class="panel-body">
+          <div id="subagents-list">
+            <div class="text-sm text-muted" style="padding:16px 0;text-align:center">Design an architecture to see sub-agents here.</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Orchestrator synthesis</span><button class="btn btn-sm" onclick="copyOutput('subagent-synthesis')">Copy</button></div>
+        <div class="panel-body">
+          <div class="output-box" id="subagent-synthesis">The orchestrator's final synthesis of sub-agent outputs will appear here.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ── GLOBALS ──────────────────────────────────────────────────────────
+const API_URL = '/api/chat';
+const MODEL = 'claude-3-5-sonnet-20241022';
+let exampleCount = 2;
+let currentPage = 'builder';
+let currentMemKey = 'guidelines';
+
+let historyData = JSON.parse(localStorage.getItem('contextcraft_history')) || [
+  {title:'Customer support agent — Acme Corp', system:'<role>\nYou are a helpful customer support agent for Acme Corp.\n</role>\n\n<instructions>\n- Answer questions clearly and concisely\n- If uncertain, escalate to a human\n- Escalate complex billing issues to Tier 2\n</instructions>\n\n<output_format>\nKeep responses under 3 sentences when possible.\n</output_format>', tools:['web_search','get_customer','create_ticket'], score:86},
+  {title:'Research summarizer — long-horizon task', system:'<role>\nYou are a research assistant specializing in synthesizing long-form content.\n</role>\n\n<instructions>\n- Search for relevant sources\n- Summarize key findings with citations\n- Use structured note-taking to preserve discoveries across long sessions\n</instructions>', tools:['web_search','memory'], score:79},
+  {title:'Code review agent — PR analysis', system:'You review pull requests. Check for bugs, style issues, and performance problems. Return a detailed review.', tools:['read_file','web_search','create_ticket','send_email','memory'], score:44},
+  {title:'Data extraction pipeline — multi-step', system:'<role>\nYou extract structured data from documents.\n</role>\n\n<instructions>\n- Use file reading tools to load data just-in-time\n- Store intermediate results in memory\n- Return clean JSON\n</instructions>\n\n<output_format>\nAlways respond in valid JSON.\n</output_format>', tools:['read_file','memory','web_search','create_ticket'], score:91},
+  {title:'Email drafting assistant', system:'<role>\nYou are a professional email writing assistant.\n</role>\n\n<instructions>\n- Match the tone requested by the user (formal/casual/urgent)\n- Keep emails concise\n- Always include a clear subject line\n</instructions>', tools:['send_email'], score:83}
+];
+
+let memFileContents = JSON.parse(localStorage.getItem('contextcraft_memory')) || {
+  guidelines:`<guidelines>
+  <tone>Professional but warm. Avoid jargon.</tone>
+  <escalation>
+    Escalate to Tier 2 when: billing disputes over $500, account compromises, legal requests.
+  </escalation>
+  <response_time>Respond within 2 turns. If unclear, ask one clarifying question.</response_time>
+</guidelines>`,
+  policies:`<refund_policy>
+  <standard>30-day full refund for unused products.</standard>
+  <digital>No refund after download. Exception: technical failure.</digital>
+  <subscription>Cancel anytime. Prorated refund in first 7 days.</subscription>
+</refund_policy>`,
+  notes:`# NOTES.md
+## Session 2025-09-29
+- Customer #4421 flagged for review (3rd refund this quarter)
+- Bug in checkout flow reported by 3 users — ticket #8823 open
+- New refund policy effective Oct 1st
+
+## Pending
+- Follow up on ticket #8801
+- Update FAQ with new billing cycle info`
+};
+
+// ── NAVIGATION ────────────────────────────────────────────────────────
+function navigate(page, el) {
+  document.querySelectorAll('.main-area').forEach(m => m.style.display = 'none');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).style.display = 'flex';
+  el.classList.add('active');
+  currentPage = page;
+}
+
+function runCurrentPageAction() {
+  const actions = {
+    builder: runBuilderOptimize,
+    analyzer: runAnalyzer,
+    compaction: runCompaction,
+    fewshot: runFewshotAnalysis,
+    memory: runMemoryAnalysis,
+    subagents: runSubagents
+  };
+  if (actions[currentPage]) actions[currentPage]();
+}
+
+// ── SHARED UTILS ─────────────────────────────────────────────────────
+function estTokens(text){ return Math.max(0, Math.round(text.length / 3.8)); }
+
+function updateTokenBar(barId, lblId, text, max) {
+  const t = estTokens(text);
+  const pct = Math.min(100, Math.round(t / max * 100));
+  const el = document.getElementById(barId);
+  el.style.width = pct + '%';
+  el.className = 'token-fill' + (pct > 80 ? ' danger' : pct > 55 ? ' warn' : '');
+  document.getElementById(lblId).textContent = t.toLocaleString() + ' / ' + max.toLocaleString();
+}
+
+function copyOutput(id) {
+  navigator.clipboard.writeText(document.getElementById(id).innerText || document.getElementById(id).textContent).catch(()=>{});
+}
+
+function setLoading(id, msg) {
+  const el = document.getElementById(id);
+  el.innerHTML = '<span class="loading-text">⟳ ' + (msg||'Thinking...') + '</span>';
+}
+
+async function callClaude(prompt, system) {
+  const body = { model: MODEL, max_tokens: 1000, messages:[{role:'user',content:prompt}] };
+  if (system) body.system = system;
+  
+  const headers = { 'Content-Type': 'application/json' };
+  if (window.supabaseClient) {
+    const { data } = await window.supabaseClient.auth.getSession();
+    if (data && data.session) {
+      headers['Authorization'] = 'Bearer ' + data.session.access_token;
+    }
+  }
+
+  const r = await fetch(API_URL, { method:'POST', headers, body: JSON.stringify(body) });
+  const d = await r.json();
+  if (d.error) throw new Error(d.error.message || d.error);
+  return d.content[0].text;
+}
+
+function clearAll() {
+  if (currentPage === 'builder') {
+    document.getElementById('system-prompt').value = '';
+    document.getElementById('builder-output').textContent = 'Optimized system prompt will appear here after running the optimizer.';
+    updateBuilderScores();
+  }
+}
+
+// ── BUILDER PAGE ──────────────────────────────────────────────────────
+const snippets = {
+  role:`\n<role>\nYou are [ROLE] at [COMPANY]. Your primary responsibility is [CORE_FUNCTION].\n</role>`,
+  background:`\n\n<background_information>\n[Context the agent needs to know upfront — company details, domain knowledge, constraints.]\n</background_information>`,
+  instructions:`\n\n<instructions>\n- [Primary instruction]\n- [Secondary instruction]\n- [When to escalate or ask for clarification]\n</instructions>`,
+  tools_guidance:`\n\n## Tool guidance\n- Use [TOOL_A] when [SPECIFIC_CONDITION]\n- Use [TOOL_B] only if [DIFFERENT_CONDITION]\n- Prefer [TOOL_A] over [TOOL_B] for [TYPE_OF_TASK]`,
+  output_format:`\n\n<output_format>\n[Describe exactly how the response should be structured, length, format, etc.]\n</output_format>`,
+  examples_block:`\n\n<examples>\n<example>\n<user_input>User question here?</user_input>\n<ideal_response>Ideal agent response here.</ideal_response>\n</example>\n<example>\n<user_input>Another user question?</user_input>\n<ideal_response>Another ideal response.</ideal_response>\n</example>\n</examples>`
+};
+function insertSnippet(k){ const ta=document.getElementById('system-prompt'); ta.value+=snippets[k]||''; updateTokenBar('sys-bar','sys-token-lbl',ta.value,2048); updateBuilderScores(); }
+
+function toggleTool(card){
+  card.classList.toggle('on');
+  const enabled = document.querySelectorAll('#tool-grid .tool-card.on').length;
+  document.getElementById('tools-enabled-count').textContent = enabled + ' enabled';
+  // Overlap warning if >4 tools
+  document.getElementById('tool-overlap-warn').style.display = enabled >= 5 ? 'block' : 'none';
+  updateBuilderScores();
+}
+
+function updateBuilderScores() {
+  const sysText = document.getElementById('system-prompt').value;
+  const tokens = estTokens(sysText);
+  const enabled = document.querySelectorAll('#tool-grid .tool-card.on').length;
+  const altitude = document.getElementById('altitude-select').value;
+  const histStrategy = document.getElementById('history-strategy').value;
+
+  // Signal density
+  const hasXml = sysText.includes('<') && sysText.includes('>');
+  const hasExamples = sysText.toLowerCase().includes('example');
+  let signalScore = tokens < 10 ? 0 : Math.min(95, 45 + (hasXml?20:0) + (hasExamples?15:0) + Math.min(20, tokens/10));
+  setScore('signal', Math.round(signalScore), signalScore < 40 ? 'Add XML structure and examples to increase signal density.' : signalScore < 70 ? 'Good structure. Consider adding concrete examples.' : 'Strong signal density.');
+
+  // Altitude
+  let altScore = altitude === 'balanced' ? 80 : altitude === 'specific' ? 35 : 45;
+  if (tokens > 20) altScore = Math.min(95, altScore + Math.min(15, tokens/20));
+  setScore('altitude', Math.round(altScore), altitude === 'specific' ? 'Risk of brittle hardcoded logic. Trust the model more.' : altitude === 'vague' ? 'Too vague — add concrete heuristics and structure.' : 'Good balance between specific guidance and flexibility.');
+
+  // Tool clarity
+  let toolScore = enabled === 0 ? 0 : enabled <= 3 ? 90 : enabled === 4 ? 75 : enabled === 5 ? 55 : 35;
+  setScore('tools', toolScore, enabled === 0 ? 'No tools enabled.' : enabled >= 5 ? 'Too many tools — if a human can\'t choose between them, neither can the model.' : 'Tool set is well-scoped and distinct.');
+
+  // History
+  let histScore = histStrategy === 'summarized' ? 92 : histStrategy === 'none' ? 85 : histStrategy === '10' ? 70 : 52;
+  setScore('hist', histScore, histStrategy === '20' ? 'Consider compaction — 63% of budget used by history.' : histStrategy === 'summarized' ? 'Excellent — compacted history maximizes attention budget.' : 'Good strategy.');
+
+  // Global score
+  const overall = tokens < 10 ? 0 : Math.round((signalScore + altScore + toolScore + histScore) / 4);
+  document.getElementById('global-score').textContent = overall || '—';
+}
+
+function setScore(key, val, note) {
+  const colors = val >= 70 ? 'var(--brand)' : val >= 50 ? 'var(--amber)' : 'var(--red)';
+  document.getElementById('sc-' + key).textContent = val ? val + '/100' : '—';
+  document.getElementById('sc-' + key).style.color = val >= 70 ? 'var(--brand-dk)' : val >= 50 ? 'var(--amber-dk)' : 'var(--red-dk)';
+  const fill = document.getElementById('sf-' + key);
+  fill.style.width = val + '%';
+  fill.style.background = colors;
+  document.getElementById('sn-' + key).textContent = note;
+}
+
+async function runBuilderOptimize() {
+  const sys = document.getElementById('system-prompt').value;
+  if (!sys.trim()) { alert('Write a system prompt first.'); return; }
+  setLoading('builder-output', 'Optimizing with Claude...');
+  try {
+    const result = await callClaude(
+      `You are a context engineering expert. Analyze and improve this system prompt based on Anthropic's context engineering principles: smallest set of high-signal tokens, optimal "altitude" (not too brittle/specific, not too vague), clear XML structure, and effective examples.\n\nCurrent system prompt:\n${sys}\n\nReturn ONLY the improved system prompt — no explanations, no preamble. Make it production-ready.`,
+      'You are an expert in Anthropic context engineering. Output only the improved prompt.'
+    );
+    document.getElementById('builder-output').textContent = result;
+    // Update score
+    const prevScore = parseInt(document.getElementById('global-score').textContent) || 60;
+    document.getElementById('global-score').textContent = Math.min(97, prevScore + 14);
+    addHistoryEntry('Optimized: ' + sys.slice(0,40) + '...');
+  } catch(e) {
+    document.getElementById('builder-output').textContent = 'Error: ' + e.message;
+  }
+}
+
+// ── ANALYZER PAGE ─────────────────────────────────────────────────────
+function loadAnalyzerSample() {
+  document.getElementById('analyzer-input').value = `You are a helpful assistant. Always be nice.
+
+Tools available:
+- search: search the web
+- lookup: look up customer info
+- find_customer: find customer record
+- get_account: get account details
+- email: send emails
+
+Past conversation:
+User: Hi, what's my order status?
+Assistant: I'll look that up for you! [uses lookup tool - returns full JSON with 500 lines of order history]
+User: And what about my account?
+Assistant: [uses get_account - returns full account JSON 800 lines]
+User: Can you help me with a refund?
+Assistant: Of course! Let me look into this...`;
+  updateTokenBar('analyzer-bar','analyzer-token-lbl',document.getElementById('analyzer-input').value,8192);
+}
+
+document.getElementById('analyzer-input').addEventListener('input', function(){ updateTokenBar('analyzer-bar','analyzer-token-lbl',this.value,8192); });
+
+async function runAnalyzer() {
+  const ctx = document.getElementById('analyzer-input').value;
+  if (!ctx.trim()) { alert('Paste your context first.'); return; }
+  setLoading('analyzer-scores', 'Scoring...');
+  setLoading('analyzer-issues', 'Detecting issues...');
+  try {
+    const result = await callClaude(
+      `Analyze this AI agent context against Anthropic's context engineering framework. Return a JSON object with exactly this structure:\n{\n  "scores": {\n    "signal_density": {"score": 0-100, "note": "..."},\n    "prompt_altitude": {"score": 0-100, "note": "..."},\n    "tool_clarity": {"score": 0-100, "note": "..."},\n    "history_efficiency": {"score": 0-100, "note": "..."},\n    "example_quality": {"score": 0-100, "note": "..."}\n  },\n  "issues": [\n    {"severity": "warning|info|ok", "title": "...", "detail": "..."}\n  ],\n  "overall": 0-100\n}\n\nContext to analyze:\n${ctx}\n\nReturn ONLY the JSON object.`,
+      'You are a context engineering analyzer. Output only valid JSON.'
+    );
+    let data;
+    try { data = JSON.parse(result.replace(/```json|```/g,'')); } catch(e) { throw new Error('Could not parse analysis'); }
+
+    // Render scores
+    const scoreNames = {signal_density:'Signal density',prompt_altitude:'Prompt altitude',tool_clarity:'Tool clarity',history_efficiency:'History efficiency',example_quality:'Example quality'};
+    let scHtml = '';
+    for (const [k,v] of Object.entries(data.scores)) {
+      const col = v.score >= 70 ? 'var(--brand)' : v.score >= 50 ? 'var(--amber)' : 'var(--red)';
+      scHtml += `<div class="score-card"><div class="score-hd"><span>${scoreNames[k]||k}</span><span class="fw-500" style="color:${v.score>=70?'var(--brand-dk)':v.score>=50?'var(--amber-dk)':'var(--red-dk)'}">${v.score}/100</span></div><div class="score-bar"><div class="score-fill" style="width:${v.score}%;background:${col}"></div></div><div class="score-note">${v.note}</div></div>`;
+    }
+    document.getElementById('analyzer-scores').innerHTML = scHtml;
+
+    // Render issues
+    const iconMap = {warning:`<svg width="10" height="10" viewBox="0 0 10 10" fill="var(--amber-dk)"><path d="M5 1L1 9h8L5 1z"/></svg>`, ok:`<svg width="10" height="10" viewBox="0 0 10 10" fill="var(--brand-dk)"><path d="M2 5l2.5 2.5L8 3" stroke="var(--brand-dk)" stroke-width="1.5" fill="none"/></svg>`, info:`<svg width="10" height="10" viewBox="0 0 10 10" fill="var(--blue-dk)"><circle cx="5" cy="5" r="4"/><text x="5" y="8" text-anchor="middle" fill="white" font-size="6">i</text></svg>`};
+    const classMap = {warning:'a-warn',ok:'a-ok',info:'a-info'};
+    let issHtml = '';
+    (data.issues||[]).forEach(iss => {
+      issHtml += `<div class="analysis-item"><div class="a-icon ${classMap[iss.severity]||'a-info'}">${iconMap[iss.severity]||iconMap.info}</div><div class="a-text"><strong>${iss.title}</strong> ${iss.detail}</div></div>`;
+    });
+    document.getElementById('analyzer-issues').innerHTML = issHtml || '<div class="text-xs text-muted">No issues found.</div>';
+
+    const cnt = (data.issues||[]).filter(i=>i.severity==='warning').length;
+    document.getElementById('issue-count').textContent = cnt || '0';
+    document.getElementById('issue-badge').textContent = cnt + ' warning' + (cnt!==1?'s':'');
+    document.getElementById('global-score').textContent = data.overall || '—';
+  } catch(e) {
+    document.getElementById('analyzer-scores').textContent = 'Error: ' + e.message;
+    document.getElementById('analyzer-issues').textContent = 'Could not complete analysis.';
+  }
+}
+
+// ── COMPACTION PAGE ───────────────────────────────────────────────────
+document.getElementById('compact-input').addEventListener('input', function(){
+  const t = estTokens(this.value);
+  document.getElementById('compact-in-lbl').textContent = t.toLocaleString() + ' tokens';
+  const pct = Math.min(100, t/200);
+  const bar = document.getElementById('compact-in-bar');
+  bar.style.width = pct + '%';
+  bar.className = 'token-fill' + (pct > 80 ? ' danger' : pct > 55 ? ' warn' : '');
+  document.getElementById('stat-in').textContent = t.toLocaleString();
+});
+
+async function runCompaction() {
+  const input = document.getElementById('compact-input').value;
+  if (!input.trim()) { alert('Paste conversation history first.'); return; }
+  const strategy = document.getElementById('compact-strategy').value;
+  const preserve = document.getElementById('compact-preserve').value;
+  const inTokens = estTokens(input);
+  setLoading('compact-output', 'Compacting...');
+  setLoading('compact-preserved', 'Analyzing...');
+  document.getElementById('stat-in').textContent = inTokens.toLocaleString();
+
+  const strategyDesc = {
+    full: 'Full compaction: summarize the conversation, preserve key decisions and unresolved issues, clear all redundant tool results.',
+    tool_clear: 'Tool result clearing only: identify and remove tool call results that are no longer needed. Keep conversation turns intact.',
+    summarize: 'Summarization only: compress repetitive turns into concise summaries while keeping the structure.'
+  }[strategy];
+
+  const preserveNote = preserve ? `\nAlways preserve content related to: ${preserve}` : '';
+
+  try {
+    const result = await callClaude(
+      `You are a context compaction engine. Apply this strategy: ${strategyDesc}${preserveNote}\n\nReturn a JSON object:\n{\n  "compacted": "the compacted output text",\n  "preserved": ["list", "of", "key", "things", "kept"],\n  "discarded": ["list", "of", "what", "was", "removed"],\n  "output_tokens": estimated_token_count\n}\n\nConversation to compact:\n${input}\n\nReturn ONLY the JSON object.`,
+      'You are a context engineering compaction engine. Output only valid JSON.'
+    );
+    let data;
+    try { data = JSON.parse(result.replace(/```json|```/g,'')); } catch(e) { throw new Error('Could not parse output'); }
+
+    document.getElementById('compact-output').textContent = data.compacted;
+    const outT = data.output_tokens || estTokens(data.compacted);
+    const pct = Math.round((1 - outT/inTokens) * 100);
+    document.getElementById('stat-out').textContent = outT.toLocaleString();
+    document.getElementById('stat-pct').textContent = pct + '%';
+
+    let presHtml = '';
+    if (data.preserved?.length) presHtml += '<div class="text-xs fw-500" style="margin-bottom:6px;color:var(--brand-dk)">Preserved</div>' + data.preserved.map(p=>`<div class="diff-add" style="display:inline-block;margin:2px 3px;font-size:11px;padding:2px 7px;border-radius:20px">${p}</div>`).join('');
+    if (data.discarded?.length) presHtml += '<div class="text-xs fw-500" style="margin:10px 0 6px;color:var(--red-dk)">Discarded</div>' + data.discarded.map(d=>`<div class="diff-rm" style="display:inline-block;margin:2px 3px;font-size:11px;padding:2px 7px;border-radius:20px;text-decoration:none">${d}</div>`).join('');
+    document.getElementById('compact-preserved').innerHTML = presHtml;
+    addHistoryEntry('Compacted session (' + pct + '% reduction)');
+  } catch(e) {
+    document.getElementById('compact-output').textContent = 'Error: ' + e.message;
+    document.getElementById('compact-preserved').textContent = '';
+  }
+}
+
+// ── HISTORY PAGE ──────────────────────────────────────────────────────
+function loadHistory(idx) {
+  const d = historyData[idx];
+  const toolsList = d.tools.map(t=>`<span class="chip active" style="cursor:default">${t}</span>`).join('');
+  document.getElementById('history-detail').innerHTML = `
+    <div style="margin-bottom:12px"><div class="text-xs text-muted" style="margin-bottom:4px">Title</div><div class="fw-500">${d.title}</div></div>
+    <div style="margin-bottom:12px"><div class="text-xs text-muted" style="margin-bottom:6px">System prompt</div><div class="output-box mono" style="min-height:80px">${d.system}</div></div>
+    <div style="margin-bottom:12px"><div class="text-xs text-muted" style="margin-bottom:6px">Tools</div><div class="chip-row">${toolsList}</div></div>
+    <div class="flex gap-8 mt-12">
+      <button class="btn btn-primary" style="flex:1" onclick="restoreHistory(${idx})">Restore to builder ↗</button>
+      <button class="btn" onclick="deleteHistory(${idx})">Delete</button>
+    </div>`;
+}
+
+function restoreHistory(idx) {
+  const d = historyData[idx];
+  document.getElementById('system-prompt').value = d.system;
+  navigate('builder', document.querySelector('[data-page=builder]'));
+  updateBuilderScores();
+}
+
+function deleteHistory(idx) {
+  historyData.splice(idx, 1);
+  saveHistory();
+  document.getElementById('history-detail').innerHTML = '<div class="text-sm text-muted">Deleted.</div>';
+  renderHistoryList();
+}
+
+function renderHistoryList() {
+  const list = document.getElementById('history-list');
+  list.innerHTML = historyData.map((d,i)=>`
+    <div class="history-item" onclick="loadHistory(${i})">
+      <div class="history-title">${d.title}</div>
+      <div class="history-meta"><span>Score: <span class="${d.score>=70?'delta-up':'delta-dn'}">${d.score}</span></span><span>${d.tools.length} tools</span></div>
+    </div>`).join('');
+}
+
+function addHistoryEntry(title) {
+  historyData.unshift({title, system: document.getElementById('system-prompt').value || '', tools:[], score: parseInt(document.getElementById('global-score').textContent)||0});
+  saveHistory();
+  renderHistoryList();
+}
+
+// ── FEW-SHOT PAGE ─────────────────────────────────────────────────────
+function addExample() {
+  exampleCount++;
+  const div = document.createElement('div');
+  div.className = 'example-card';
+  div.innerHTML = `<div class="ex-hd"><div class="ex-num">${exampleCount}</div><span class="ex-title">Example ${exampleCount}</span><button class="btn btn-sm" onclick="removeExample(this)" style="margin-left:auto">Remove</button></div><div class="ex-body"><div><div class="ex-label">User input</div><textarea rows="4" placeholder="What the user says..."></textarea></div><div><div class="ex-label">Ideal response</div><textarea rows="4" placeholder="How the agent should respond..."></textarea></div></div>`;
+  document.getElementById('examples-container').appendChild(div);
+}
+function removeExample(btn) {
+  btn.closest('.example-card').remove();
+}
+
+async function runFewshotAnalysis() {
+  const cards = document.querySelectorAll('#examples-container .example-card');
+  const examples = [];
+  cards.forEach((card,i) => {
+    const tas = card.querySelectorAll('textarea');
+    if (tas[0].value.trim() || tas[1].value.trim())
+      examples.push({input: tas[0].value, response: tas[1].value});
+  });
+  if (!examples.length) { alert('Add at least one example with content.'); return; }
+
+  setLoading('fewshot-diversity', 'Analyzing diversity...');
+  setLoading('fewshot-output', 'Generating XML...');
+  setLoading('fewshot-suggestions', 'Generating suggestions...');
+
+  const exStr = examples.map((e,i)=>`Example ${i+1}:\nInput: ${e.input}\nResponse: ${e.response}`).join('\n\n');
+
+  try {
+    const result = await callClaude(
+      `You are a few-shot example quality expert. Analyze these examples and return a JSON object:\n{\n  "diversity_scores": {\n    "topic_coverage": 0-100,\n    "response_variety": 0-100,\n    "edge_case_coverage": 0-100\n  },\n  "xml_block": "the <examples>...</examples> XML block ready to paste into a system prompt",\n  "suggestions": "2-3 sentences on how to improve the examples — what's missing, what to add"\n}\n\nExamples:\n${exStr}\n\nReturn ONLY the JSON.`,
+      'You are a context engineering expert. Output only valid JSON.'
+    );
+    let data;
+    try { data = JSON.parse(result.replace(/```json|```/g,'')); } catch(e) { throw new Error('Parse error'); }
+
+    // Diversity
+    const divScores = data.diversity_scores || {};
+    let divHtml = '';
+    const divLabels = {topic_coverage:'Topic coverage',response_variety:'Response variety',edge_case_coverage:'Edge case coverage'};
+    for (const [k,v] of Object.entries(divScores)) {
+      const col = v>=70?'var(--brand)':v>=50?'var(--amber)':'var(--red)';
+      divHtml += `<div class="score-card"><div class="score-hd"><span>${divLabels[k]||k}</span><span class="fw-500" style="color:${v>=70?'var(--brand-dk)':v>=50?'var(--amber-dk)':'var(--red-dk)'}">${v}/100</span></div><div class="score-bar"><div class="score-fill" style="width:${v}%;background:${col}"></div></div></div>`;
+    }
+    document.getElementById('fewshot-diversity').innerHTML = divHtml || '<div class="text-xs text-muted">Could not analyze diversity.</div>';
+    document.getElementById('fewshot-output').textContent = data.xml_block || '';
+    document.getElementById('fewshot-suggestions').textContent = data.suggestions || '';
+  } catch(e) {
+    document.getElementById('fewshot-diversity').textContent = 'Error: ' + e.message;
+  }
+}
+
+// ── MEMORY PAGE ───────────────────────────────────────────────────────
+function selectMemFile(el, key) {
+  document.querySelectorAll('.mem-file').forEach(f=>f.classList.remove('active'));
+  el.classList.add('active');
+  currentMemKey = key;
+  const content = memFileContents[key] || '';
+  document.getElementById('mem-editor').value = content;
+  document.getElementById('mem-editor-title').textContent = el.querySelector('.mem-file-name').textContent;
+  updateMemApiPreview();
+  const t = estTokens(content);
+  document.getElementById('mem-token-lbl').textContent = '~' + t + ' tokens';
+  const bar = document.getElementById('mem-bar');
+  bar.style.width = Math.min(100, t/5) + '%';
+}
+
+function updateMemApiPreview() {
+  const name = document.getElementById('mem-editor-title').textContent;
+  document.getElementById('memory-api-preview').textContent = JSON.stringify({type:'tool_use',name:'memory',input:{command:'view',path:'/memories/'+name}},null,2);
+}
+
+function addMemoryFile() {
+  const name = prompt('File name (e.g. notes.md):');
+  if (!name) return;
+  const container = document.getElementById('memory-files');
+  const div = document.createElement('div');
+  div.className = 'mem-file';
+  div.onclick = function(){ selectMemFile(this, '_new_' + name); };
+  div.innerHTML = `<div class="mem-file-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="1" width="10" height="12" rx="1.5"/><line x1="4" y1="5" x2="10" y2="5"/><line x1="4" y1="8" x2="8" y2="8"/></svg></div><div style="flex:1"><div class="mem-file-name">${name}</div><div class="mem-file-size">~0 tokens</div></div>`;
+  container.appendChild(div);
+  memFileContents['_new_' + name] = '';
+  saveMemory();
+  selectMemFile(div, '_new_' + name);
+}
+
+async function runMemoryAnalysis() {
+  const content = document.getElementById('mem-editor').value;
+  if (!content.trim()) { alert('Add content to the memory file first.'); return; }
+  setLoading('memory-analysis', 'Analyzing memory file...');
+  try {
+    const result = await callClaude(
+      `You are a context engineering expert reviewing an AI agent memory file. Analyze this memory file for:\n1. Token efficiency (is it concise?)\n2. Structure (is it easy for an agent to parse?)\n3. Completeness (what might be missing?)\n4. Suggestions for improvement\n\nProvide 3-5 concrete, actionable suggestions in 2-3 sentences total. Be specific.\n\nFile content:\n${content}`
+    );
+    document.getElementById('memory-analysis').textContent = result;
+  } catch(e) {
+    document.getElementById('memory-analysis').textContent = 'Error: ' + e.message;
+  }
+}
+
+// ── SUB-AGENTS PAGE ───────────────────────────────────────────────────
+async function runSubagents() {
+  const task = document.getElementById('orchestrator-task').value;
+  if (!task.trim()) { alert('Describe the orchestrator task first.'); return; }
+  const n = parseInt(document.getElementById('num-subagents').value);
+  const budget = document.getElementById('subagent-budget').value;
+
+  setLoading('subagent-architecture', 'Designing architecture...');
+  document.getElementById('subagents-list').innerHTML = '<div class="text-sm text-muted" style="padding:8px 0;text-align:center">Designing sub-agents...</div>';
+  setLoading('subagent-synthesis', 'Will run after sub-agents complete...');
+  document.getElementById('subagents-status').textContent = 'Designing...';
+
+  try {
+    // Step 1: Design architecture
+    const archResult = await callClaude(
+      `You are a multi-agent architecture designer. Given this task, design an orchestrator + ${n} sub-agent architecture.\n\nReturn a JSON object:\n{\n  "architecture_summary": "2-3 sentence overview of the design",\n  "subagents": [\n    {"name": "...", "role": "...", "task": "specific focused task for this sub-agent in 1 sentence", "tools": ["tool1","tool2"]}\n  ]\n}\n\nTask: ${task}\nSub-agent output budget: ${budget} each.\n\nReturn ONLY the JSON.`,
+      'You are a multi-agent architect. Output only valid JSON.'
+    );
+    let arch;
+    try { arch = JSON.parse(archResult.replace(/```json|```/g,'')); } catch(e) { throw new Error('Parse error'); }
+
+    document.getElementById('subagent-architecture').textContent = arch.architecture_summary;
+
+    // Render sub-agent cards (running state)
+    const agentList = document.getElementById('subagents-list');
+    agentList.innerHTML = '';
+    arch.subagents.forEach((a,i) => {
+      const card = document.createElement('div');
+      card.className = 'agent-card running';
+      card.id = 'agent-card-' + i;
+      card.innerHTML = `<div class="agent-card-hd"><div class="agent-status running"></div><span class="agent-name">${a.name}</span><span class="agent-tokens">Running...</span></div><div class="agent-task">${a.task}</div><div class="agent-output"></div>`;
+      agentList.appendChild(card);
+    });
+    document.getElementById('subagents-status').textContent = 'Running ' + n + ' sub-agents...';
+
+    // Step 2: Run each sub-agent
+    const subResults = await Promise.all(arch.subagents.map(async (a, i) => {
+      const res = await callClaude(
+        `You are ${a.name}, a specialized sub-agent. Your role: ${a.role}\n\nComplete this focused task and return a concise summary (max ${budget}):\n${a.task}\n\nContext from the main task: ${task}\n\nBe specific and produce actionable findings. This will be fed to an orchestrator agent.`
+      );
+      // Update card
+      const card = document.getElementById('agent-card-' + i);
+      card.classList.remove('running');
+      card.classList.add('done');
+      const t = estTokens(res);
+      card.querySelector('.agent-status').className = 'agent-status done';
+      card.querySelector('.agent-tokens').textContent = t + ' tokens';
+      card.querySelector('.agent-output').textContent = res.slice(0, 200) + (res.length > 200 ? '...' : '');
+      return {name: a.name, output: res};
+    }));
+
+    document.getElementById('subagents-status').textContent = 'All done — synthesizing...';
+
+    // Step 3: Orchestrator synthesis
+    const synthInput = subResults.map(r => `=== ${r.name} ===\n${r.output}`).join('\n\n');
+    setLoading('subagent-synthesis', 'Orchestrator synthesizing...');
+    const synthesis = await callClaude(
+      `You are the orchestrator agent. Synthesize these sub-agent findings into a coherent final output for this task:\n\n${task}\n\nSub-agent outputs:\n${synthInput}\n\nProvide a clear, structured synthesis.`
+    );
+    document.getElementById('subagent-synthesis').textContent = synthesis;
+    document.getElementById('subagents-status').textContent = 'Complete';
+  } catch(e) {
+    document.getElementById('subagent-architecture').textContent = 'Error: ' + e.message;
+    document.getElementById('subagents-status').textContent = 'Error';
+  }
+}
+
+// ── PERSISTENCE & AUTH ────────────────────────────────────────────────
+function saveHistory() { localStorage.setItem('contextcraft_history', JSON.stringify(historyData)); }
+function saveMemory() { localStorage.setItem('contextcraft_memory', JSON.stringify(memFileContents)); }
+function saveActiveMemory() {
+  if(currentMemKey) {
+    memFileContents[currentMemKey] = document.getElementById('mem-editor').value;
+    saveMemory();
+  }
+}
+
+function toggleDarkMode() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('contextcraft_theme', isDark ? 'light' : 'dark');
+}
+if (localStorage.getItem('contextcraft_theme') === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); }
+
+async function logout() {
+  if(window.supabaseClient) {
+    await window.supabaseClient.auth.signOut();
+  }
+  window.location.href = 'index.html';
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+updateBuilderScores();
+</script>
+<script src="/api/config"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  if(window.ENV && window.ENV.SUPABASE_URL) {
+    window.supabaseClient = window.supabase.createClient(window.ENV.SUPABASE_URL, window.ENV.SUPABASE_ANON_KEY);
+    window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      if (!session) window.location.href = 'index.html';
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "contextcraft",
+  "version": "1.0.0",
+  "description": "Context Engineering Studio",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

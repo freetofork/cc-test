@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ContextCraft — The Context Engineering Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand: #1D9E75;
+      --brand-dk: #0F6E56;
+      --brand-lt: #E1F5EE;
+      --bg: #ffffff;
+      --bg-alt: #f7f7f5;
+      --text: #1a1a18;
+      --text-muted: #6b6b68;
+      --border: rgba(0, 0, 0, 0.1);
+      --font: 'Inter', sans-serif;
+    }
+
+    [data-theme="dark"] {
+      --brand: #26C494;
+      --brand-dk: #5DCAA5;
+      --brand-lt: #0F3D2F;
+      --bg: #121212;
+      --bg-alt: #1a1a1a;
+      --text: #ffffff;
+      --text-muted: #A0A0A0;
+      --border: rgba(255, 255, 255, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+      background: var(--brand);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-mark svg {
+      width: 16px;
+      height: 16px;
+      fill: white;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      font-size: 14px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-outline {
+      border-color: var(--border);
+      background: transparent;
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      background: var(--bg-alt);
+    }
+
+    .btn-primary {
+      background: var(--brand);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--brand-dk);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(29, 158, 117, 0.2);
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 100px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Pricing */
+    .pricing-section {
+      padding: 80px 20px;
+      background: var(--bg-alt);
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 50px;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .pricing-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px 30px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative;
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+    }
+
+    .pricing-card.popular {
+      border: 2px solid var(--brand);
+    }
+
+    .popular-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--brand);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .tier-name {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .tier-price {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .tier-price span {
+      font-size: 16px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .tier-desc {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+
+    .feature-list {
+      list-style: none;
+      margin-bottom: 40px;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .feature-list li svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--brand);
+      flex-shrink: 0;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal {
+      background: var(--bg);
+      padding: 40px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border);
+      position: relative;
+      transform: scale(0.95);
+      transition: transform 0.2s;
+    }
+
+    .modal-overlay.active .modal {
+      transform: scale(1);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .modal h2 {
+      margin-bottom: 24px;
+      font-size: 24px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-alt);
+      color: var(--text);
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--brand);
+    }
+
+    #auth-error {
+      color: var(--red, #e74c3c);
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .toggle-auth {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .toggle-auth a {
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <a href="#" class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 14 14">
+          <path d="M7 1L2 4v5l5 3 5-3V4L7 1z" />
+        </svg>
+      </div>
+      ContextCraft
+    </a>
+    <div class="nav-links">
+      <button class="btn btn-outline" onclick="toggleDarkMode()">🌙</button>
+      <button class="btn btn-outline" onclick="openAuth('login')">Log in</button>
+      <button class="btn btn-primary" onclick="openAuth('signup')">Sign up</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <h1>The Context Engineering Studio</h1>
+    <p>Build, analyze, and compact AI agent context. Anthropic API calls, manage few-shot examples, and orchestrate
+      sub-agents in a beautiful, unified environment.</p>
+    <button class="btn btn-primary" style="font-size: 16px; padding: 14px 32px;" onclick="openAuth('signup')">Start
+      Building for Free</button>
+  </section>
+
+  <section class="pricing-section">
+    <h2 class="section-title">Simple, usage-based pricing</h2>
+    <div class="pricing-grid">
+
+      <!-- Starter -->
+      <div class="pricing-card">
+        <div class="tier-name">Starter</div>
+        <div class="tier-price">$9<span>/mo</span></div>
+        <div class="tier-desc">Perfect for individuals experimenting with context engineering and basic agent flows.
+        </div>
+        <ul class="feature-list">
+          <li><svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg> 50 API Calls / month</li>
+          <li><svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg> Claude 3.5 Sonnet Integration</li>
+          <li><svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg> Basic Context Compaction</li>
+          <li><svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg> LocalStorage Persistence</li>
+        </ul>
+        <button class="btn btn-outline" style="width: 100%;" onclick="openAuth('signup')">Get Started</button>
+      </div>
+
+      <!-- Pro -->
+      <div class="pricing-card popular">
+        <div class="popular-badge">MOST POPULAR</div>
+        <div class="tier-name">Pro</div>
+        <div class="tier-price">$29<span>/mo</span></div>
+        <div class="tier-desc">For professional developers building production-grade AI agents and multi-step workflows.
+        </div>
+        <ul class="feature-list">
+          <li><svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg> 500 API Calls / month</li>
+          <li><svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg> Advanced Orchestrator Agents</li>
+          <li><svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg> Few-Shot Diversity Analysis</li>
+          <li><svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg> Priority Support</li>
+        </ul>
+        <button class="btn btn-primary" style="width: 100%;" onclick="openAuth('signup')">Upgrade to Pro</button>
+      </div>
+
+      <!-- Team -->
+      <div class="pricing-card">
+        <div class="tier-name">Team</div>
+        <div class="tier-price">$79<span>/mo</span></div>
+        <div class="tier-desc">For teams collaborating on agent memory, prompts, and unified architectural designs.
+        </div>
+        <ul class="feature-list">
+          <li><svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg> 3,000 API Calls / month</li>
+          <li><svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg> Up to 5 Seats Included</li>
+          <li><svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg> Shared Workspace Memory</li>
+          <li><svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg> Dedicated Account Manager</li>
+        </ul>
+        <button class="btn btn-outline" style="width: 100%;" onclick="openAuth('signup')">Create Team</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Auth Modal -->
+  <div class="modal-overlay" id="auth-modal" onclick="closeAuth(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="close-modal" onclick="closeAuth(true)">&times;</button>
+      <h2 id="auth-title">Welcome Back</h2>
+
+      <div id="auth-error"></div>
+
+      <form id="auth-form" onsubmit="handleAuth(event)">
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" id="email" required placeholder="you@example.com">
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;" id="auth-submit">Log
+          In</button>
+      </form>
+
+      <div class="toggle-auth">
+        <span id="auth-toggle-text">Don't have an account?</span>
+        <a onclick="toggleAuthMode()" id="auth-toggle-link">Sign up</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/api/config"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    let supabaseClient = null;
+    if (window.ENV && window.ENV.SUPABASE_URL) {
+      supabaseClient = window.supabase.createClient(window.ENV.SUPABASE_URL, window.ENV.SUPABASE_ANON_KEY);
+      // Auto-redirect if already logged in
+      supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        if (session) window.location.href = 'app.html';
+      });
+    }
+
+    let authMode = 'login';
+
+    function toggleDarkMode() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      localStorage.setItem('contextcraft_theme', isDark ? 'light' : 'dark');
+    }
+    if (localStorage.getItem('contextcraft_theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
+    function openAuth(mode) {
+      authMode = mode;
+      updateAuthUI();
+      document.getElementById('auth-modal').classList.add('active');
+    }
+
+    function closeAuth(force) {
+      if (force === true || force.target?.id === 'auth-modal') {
+        document.getElementById('auth-modal').classList.remove('active');
+      }
+    }
+
+    function toggleAuthMode() {
+      authMode = authMode === 'login' ? 'signup' : 'login';
+      updateAuthUI();
+    }
+
+    function updateAuthUI() {
+      document.getElementById('auth-error').style.display = 'none';
+      if (authMode === 'login') {
+        document.getElementById('auth-title').innerText = 'Welcome Back';
+        document.getElementById('auth-submit').innerText = 'Log In';
+        document.getElementById('auth-toggle-text').innerText = "Don't have an account?";
+        document.getElementById('auth-toggle-link').innerText = 'Sign up';
+      } else {
+        document.getElementById('auth-title').innerText = 'Create Account';
+        document.getElementById('auth-submit').innerText = 'Sign Up';
+        document.getElementById('auth-toggle-text').innerText = "Already have an account?";
+        document.getElementById('auth-toggle-link').innerText = 'Log in';
+      }
+    }
+
+    async function handleAuth(e) {
+      e.preventDefault();
+      if (!supabaseClient) {
+        alert("Supabase is not configured. Please ensure SUPABASE_URL and SUPABASE_ANON_KEY are in your .env");
+        window.location.href = 'app.html';
+        return;
+      }
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const btn = document.getElementById('auth-submit');
+      const errorDiv = document.getElementById('auth-error');
+
+      btn.innerText = 'Please wait...';
+      btn.disabled = true;
+      errorDiv.style.display = 'none';
+
+      let res;
+      if (authMode === 'signup') {
+        res = await supabaseClient.auth.signUp({ email, password });
+      } else {
+        res = await supabaseClient.auth.signInWithPassword({ email, password });
+      }
+
+      btn.disabled = false;
+      updateAuthUI(); // Reset button text
+
+      if (res.error) {
+        errorDiv.innerText = res.error.message;
+        errorDiv.style.display = 'block';
+      } else {
+        if (authMode === 'signup' && !res.data.session) {
+          errorDiv.innerText = "Check your email for the confirmation link.";
+          errorDiv.style.display = 'block';
+          errorDiv.style.color = 'var(--brand)';
+        } else {
+          window.location.href = 'app.html';
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>
